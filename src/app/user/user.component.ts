@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from './user.service';
 
 @Component({
   selector: 'app-user',
@@ -7,8 +8,15 @@ import { Component } from '@angular/core';
   imports: [CommonModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css',
+  providers: [UserService],
 })
-export class UserComponent {
-  user: { name: string } | undefined;
+export class UserComponent implements OnInit {
+  user: { name: string } = { name: '' };
   isLoggedIn = false;
+
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
+    this.user = this.userService.user;
+  }
 }
