@@ -1,12 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from '@angular/core/testing';
 
 import { UserComponent } from './user.component';
 import { UserService } from './user.service';
+import { DataService } from '../shared/data.service';
 
 describe('UserComponent', () => {
   let component: UserComponent;
   let fixture: ComponentFixture<UserComponent>;
   let userService: UserService;
+  let dataService: DataService;
   let compiled: any;
 
   beforeEach(async () => {
@@ -18,6 +26,7 @@ describe('UserComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     userService = fixture.debugElement.injector.get(UserService);
+    dataService = fixture.debugElement.injector.get(DataService);
     compiled = fixture.debugElement.nativeElement;
   });
 
@@ -43,4 +52,21 @@ describe('UserComponent', () => {
       component.user.name
     );
   });
+
+  it('should not fetch data successfully if not called asynchronously', () => {
+    let spy = spyOn(dataService, 'getDetails').and.returnValue(
+      Promise.resolve('Data')
+    );
+    fixture.detectChanges();
+    expect(component.data).toBe('');
+  });
+
+  it('should fetch data successfully if called asynchronously', waitForAsync(() => {
+    spyOn(dataService, 'getDetails').and.returnValue(Promise.resolve('Data'));
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      expect(component.data).toBe('Data');
+    });
+  }));
 });
