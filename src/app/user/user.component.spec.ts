@@ -24,7 +24,7 @@ describe('UserComponent', () => {
 
     fixture = TestBed.createComponent(UserComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    // fixture.detectChanges();
     userService = fixture.debugElement.injector.get(UserService);
     dataService = fixture.debugElement.injector.get(DataService);
     compiled = fixture.debugElement.nativeElement;
@@ -35,6 +35,7 @@ describe('UserComponent', () => {
   });
 
   it('should use the user name from the service', () => {
+    fixture.detectChanges();
     expect(userService.user.name).toEqual(component.user.name);
   });
 
@@ -48,6 +49,7 @@ describe('UserComponent', () => {
   });
 
   it('should not display the user name if user is logged in', () => {
+    fixture.detectChanges();
     expect(compiled.querySelector('p').textContent).not.toContain(
       component.user.name
     );
@@ -68,5 +70,15 @@ describe('UserComponent', () => {
     fixture.whenStable().then(() => {
       expect(component.data).toBe('Data');
     });
+  }));
+
+  it('should fetch data successfully if called with fakeAsync', fakeAsync(() => {
+    spyOn<DataService>(dataService, 'getDetails').and.returnValue(
+      Promise.resolve('Data')
+    );
+    fixture.detectChanges();
+
+    tick();
+    expect(component.data).toBe('Data');
   }));
 });
